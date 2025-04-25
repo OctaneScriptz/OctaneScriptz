@@ -1,0 +1,89 @@
+---                              R E C O I L  C O N T R O L                               ----
+
+EnableRCS = true  --- When Set to false, it'll turn off Recoil Control!
+
+RecoilControlMode = "1"  --- Presets: "1"
+RcCustomStrength = 7 -- Value MUST be ROUNDED! No Decimal values such as 6.5!
+
+RequireToggle = false  -- Change to false if you want it to always be on.
+
+ToggleKey = "CapsLock"  -- Usable Keys: "CapsLock", "NumLock", "ScrollLock"
+
+DelayRate = 7  -- DO NOT CHANGE IF YOU DON'T KNOW WHAT YOU'RE DOING.
+
+-------------  Recoil Presets ------
+if RecoilControlMode == "1" then
+  RecoilControlStrength = 12
+end
+--------------------------------------
+
+
+--[[ 
+       HOW TO USE FOR DUMBIES, 
+  (RC)
+1: If the  "EnableRCS" is set to false, change to true.
+2: Adjust your Recoil Control Strength, either by using a preset or a custom value!
+3: Toggle it on (if you have ForceToggle enabled, else just do step 4.)
+4: Hold Mouse1 and Mouse2 (LeftClick and RightClick) and it should drag your cursor downwards.
+5: Aim at your target and you're done!
+
+(Things to note)
+1: I did NOT make the Recoil Control Code, I just simplified everything, so you can adjust it to your needs.
+2: You don't need to hold down your toggle key, it's a toggle.
+3: You must hold mouse1 and mouse2, or else IT WON'T WORK!
+4: DelayRate works in MS, the lower the faster. 7ms = 0.07s, 2000ms = 2s. However, the preset Delay rate is perfect for most FPS games. 
+--]]
+--------------------------------------
+
+---------- Dont touch this -----------
+
+EnablePrimaryMouseButtonEvents(true);
+
+-- Key to adjust Recoil Control Strength (Left Control + MButton = Increase, Left Alt + MButton = Decrease)
+function OnEvent(event, arg)
+    if EnableRCS ~= false then
+        -- Adjust recoil strength with Left Control + Middle Mouse Button
+        if IsModifierPressed("lctrl") and event == "MOUSE_BUTTON_PRESSED" and arg == 3 then
+            RecoilControlStrength = RecoilControlStrength + 1
+            OutputLogMessage("Recoil strength increased to: " .. RecoilControlStrength .. "\n")
+        end
+
+        -- Adjust recoil strength with Left Alt + Middle Mouse Button
+        if IsModifierPressed("lalt") and event == "MOUSE_BUTTON_PRESSED" and arg == 3 then
+            if RecoilControlStrength > 1 then
+                RecoilControlStrength = RecoilControlStrength - 1
+                OutputLogMessage("Recoil strength decreased to: " .. RecoilControlStrength .. "\n")
+            end
+        end
+
+        if RequireToggle ~= false then
+            -- Check if toggle is on (CapsLock, NumLock, or ScrollLock)
+            if IsKeyLockOn(ToggleKey) then
+                if IsMouseButtonPressed(3) then  -- Middle Mouse Button
+                    repeat
+                        if IsMouseButtonPressed(1) then  -- Left Click is held
+                            repeat
+                                MoveMouseRelative(0, RecoilControlStrength)  -- Move mouse down
+                                Sleep(DelayRate)  -- Delay between moves
+                            until not IsMouseButtonPressed(1)  -- Stop when left-click is released
+                        end
+                    until not IsMouseButtonPressed(3)  -- Stop when middle mouse button is released
+                end
+            end
+        else
+            -- Without toggle, just check if middle mouse is pressed
+            if IsMouseButtonPressed(3) then  -- Middle Mouse Button
+                repeat
+                    if IsMouseButtonPressed(1) then  -- Left Click is held
+                        repeat
+                            MoveMouseRelative(0, RecoilControlStrength)  -- Move mouse down
+                            Sleep(DelayRate)  -- Delay between moves
+                        until not IsMouseButtonPressed(1)  -- Stop when left-click is released
+                    end
+                until not IsMouseButtonPressed(3)  -- Stop when middle mouse button is released
+            end
+        end
+    end
+end
+
+
