@@ -1,0 +1,331 @@
+---                              R E C O I L  C O N T R O L                                   ---
+-- ]] 
+
+EnableRCS = true 
+RecoilControlMode = "ASH R4C"
+RcCustomStrength = 7.5 
+RequireToggle = false
+ToggleKey = "CapsLock"
+DelayRate = 7              -- Vertical delay in ms
+HorizontalDelayRate = 15   -- Horizontal delay in ms
+
+-- Available Modes
+local recoilModes = {
+    "STRIKER M4", "SLEDGE L85A2", "SLEDGE P226", "THATCHER L85A2", "THATCHER P226", "ASH R4C", 
+    "ASH USG", "THERMITE 556XI", "THERMITE USG", "TWITCH F2", "TWITCH P9", "MONTAGNE P9", 
+    "GLAZ OTS", "GLAZ PMM", "FUZE AK12", "FUZE PMM", "BLITZ P12", "IQ G8A1", "IQ P12", "BUCK C8", 
+    "BUCK MK1", "BLACKBEARD MK17", "CAPITAO M249", "CAPITAO PRB", "HIBANNA TYPE81", 
+    "HIBANNA BEARING9", "JACKAL C7E", "JACKAL USP", "YING T95", "YING Q929","ZOFIA M762", 
+    "ZOFIA RG15", "DOKKAEBI MK14", "DOKKAEBI SMG12", "LION V308", "LION P9", "FINKA LP41", 
+    "FINKA PMM", "MAVERICK M4", "MAVERICK 1911", "NOMAD ARX200", "NOMAD PRB", "GRIDLOCK M249", 
+    "NOKK FMG9", "NOKK D50", "ARAMRU G8A1", "ARMARU SMG11", "KALI SPS", "IANA G36C", "ACE AK12", 
+    "ACE P9", "ZERO MP7", "ZERO USG", "FLORES AR33", "FLORES GSH", "OSA PDW", "OSA PMM", 
+    "SENS POF", "SENS SDP", "GRIM COMMANDO", "BRAVA PARA308", "RAM R4C", "RAM MK1", "DEIMOS AK74", 
+    "DEIMOS VANDETTA", "RAUORA 417", "RAUORA REAPER", "SENTRY COMMANDO", "SMOKE SMG11", 
+    "MUTE SMG11", "CASTLE UMP", "PULSE UMP", "PULSE M45", "DOC MP5", "ROOK MP5", "ROOK P9", 
+    "KAPKAN 9X19", "KAPKAN PMM", "TACHANKA 9X19", "TACHANKA PMM", "JAGER 416", "JAGER P12", 
+    "BANDIT MP7", "BANDIT P12", "FROST 9MM", "VALKYRIE MPX", "VALKYRIE D50", "CAVERIA LUISON", 
+    "ECHO MP5SD", "ECHO P229", "MIRA VECTOR", "LESION T5", "ELA SCORPION", "ELA RG15", "VIGIL K1A",
+    "VIGIL SMG12", "MAESTRO ALDA", "ALIBI MX4", "CLASH SPS", "KAID TCSG", "KAID LFP", "MOZZIE P10",
+    "MOZZIE SDP", "WARDEN MPX", "WARDEN SMG12", "GOYO VECTOR", "GOYO P229", "WAMAI MP5K", 
+    "WAMAI KREATOS", "ORYX T5", "MELUSI MP5", "MELUSI RG15", "ARUNI P10", "ARUNI PRB", 
+    "THUNDERBIRD SPEAR", "THUNDERBIRD Q929", "THORN UZK", "THORN 1911", "AZAMI 9X19", "AZAMI D50",
+    "SOLIS P90", "SOLIS SMG11", "FENRIR MP7", "TUBARAO AR15", "TUBARAO P226", "SKOPOS PCX",
+    "SKOPOS P229"
+}
+
+-- Per-operator recoil values
+local recoilStrengths = {
+    ["STRIKER M4"] = { vertical = 6.0, horizontal = 0.3 },
+    ["SLEDGE L85A2"] = { vertical = 6.5, horizontal = 0.4 },
+    ["SLEDGE P226"] = { vertical = 4.5, horizontal = 0.2 },
+    ["THATCHER L85A2"] = { vertical = 6.5, horizontal = 0.4 },
+    ["THATCHER P226"] = { vertical = 4.5, horizontal = 0.2 },
+    ["ASH R4C"] = { vertical = 7.5, horizontal = 0.3 },
+    ["ASH USG"] = { vertical = 5.5, horizontal = 0.3 },
+    ["THERMITE 556XI"] = { vertical = 6.0, horizontal = 0.3 },
+    ["THERMITE USG"] = { vertical = 5.5, horizontal = 0.3 },
+    ["TWITCH F2"] = { vertical = 6.0, horizontal = 0.3 },
+    ["TWITCH P9"] = { vertical = 4.5, horizontal = 0.2 },
+    ["MONTAGNE P9"] = { vertical = 4.5, horizontal = 0.2 },
+    ["GLAZ OTS"] = { vertical = 6.5, horizontal = 0.3 },
+    ["GLAZ PMM"] = { vertical = 4.5, horizontal = 0.2 },
+    ["FUZE AK12"] = { vertical = 7.0, horizontal = 0.4 },
+    ["FUZE PMM"] = { vertical = 4.5, horizontal = 0.2 },
+    ["BLITZ P12"] = { vertical = 4.5, horizontal = 0.2 },
+    ["IQ G8A1"] = { vertical = 6.5, horizontal = 0.3 },
+    ["IQ P12"] = { vertical = 4.5, horizontal = 0.2 },
+    ["BUCK C8"] = { vertical = 6.0, horizontal = 0.3 },
+    ["BUCK MK1"] = { vertical = 5.5, horizontal = 0.3 },
+    ["BLACKBEARD MK17"] = { vertical = 7.5, horizontal = 0.4 },
+    ["CAPITAO M249"] = { vertical = 7.0, horizontal = 0.4 },
+    ["CAPITAO PRB"] = { vertical = 4.5, horizontal = 0.2 },
+    ["HIBANNA TYPE81"] = { vertical = 6.5, horizontal = 0.3 },
+    ["HIBANNA BEARING9"] = { vertical = 4.5, horizontal = 0.2 },
+    ["JACKAL C7E"] = { vertical = 6.5, horizontal = 0.3 },
+    ["JACKAL USP"] = { vertical = 4.5, horizontal = 0.2 },
+    ["YING T95"] = { vertical = 6.0, horizontal = 0.3 },
+    ["YING Q929"] = { vertical = 4.5, horizontal = 0.2 },
+    ["ZOFIA M762"] = { vertical = 7.0, horizontal = 0.4 },
+    ["ZOFIA RG15"] = { vertical = 4.5, horizontal = 0.2 },
+    ["DOKKAEBI MK14"] = { vertical = 6.5, horizontal = 0.3 },
+    ["DOKKAEBI SMG12"] = { vertical = 5.5, horizontal = 0.3 },
+    ["LION V308"] = { vertical = 6.5, horizontal = 0.3 },
+    ["LION P9"] = { vertical = 4.5, horizontal = 0.2 },
+    ["FINKA LP41"] = { vertical = 6.0, horizontal = 0.3 },
+    ["FINKA PMM"] = { vertical = 4.5, horizontal = 0.2 },
+    ["MAVERICK M4"] = { vertical = 6.0, horizontal = 0.3 },
+    ["MAVERICK 1911"] = { vertical = 4.5, horizontal = 0.2 },
+    ["NOMAD ARX200"] = { vertical = 6.5, horizontal = 0.3 },
+    ["NOMAD PRB"] = { vertical = 4.5, horizontal = 0.2 },
+    ["GRIDLOCK M249"] = { vertical = 7.0, horizontal = 0.4 },
+    ["NOKK FMG9"] = { vertical = 5.5, horizontal = 0.3 },
+    ["NOKK D50"] = { vertical = 4.5, horizontal = 0.2 },
+    ["ARAMRU G8A1"] = { vertical = 6.5, horizontal = 0.3 },
+    ["ARMARU SMG11"] = { vertical = 5.5, horizontal = 0.3 },
+    ["KALI SPS"] = { vertical = 6.0, horizontal = 0.3 },
+    ["IANA G36C"] = { vertical = 6.5, horizontal = 0.3 },
+    ["ACE AK12"] = { vertical = 6.5, horizontal = 0.3 },
+    ["ACE P9"] = { vertical = 4.5, horizontal = 0.2 },
+    ["ZERO MP7"] = { vertical = 5.5, horizontal = 0.3 },
+    ["ZERO USG"] = { vertical = 5.0, horizontal = 0.3 },
+    ["FLORES AR33"] = { vertical = 6.0, horizontal = 0.3 },
+    ["FLORES GSH"] = { vertical = 4.5, horizontal = 0.2 },
+    ["OSA PDW"] = { vertical = 5.5, horizontal = 0.3 },
+    ["OSA PMM"] = { vertical = 4.5, horizontal = 0.2 },
+    ["SENS POF"] = { vertical = 6.0, horizontal = 0.3 },
+    ["SENS SDP"] = { vertical = 5.5, horizontal = 0.3 },
+    ["GRIM COMMANDO"] = { vertical = 6.5, horizontal = 0.3 },
+    ["BRAVA PARA308"] = { vertical = 6, horizontal = 0 },
+    ["RAM R4C"] = { vertical = 0, horizontal = 0 },
+    ["RAM MK1"] = { vertical = 0, horizontal = 0 },
+    ["DEIMOS AK74"] = { vertical = 0, horizontal = 0 },
+    ["DEIMOS VANDETTA"] = { vertical = 0, horizontal = 0 },
+    ["RAUORA 417"] = { vertical = 8.0, horizontal = 0.5 },
+    ["RAUORA REAPER"] = { vertical = 7.5, horizontal = 0.4 },
+    ["SENTRY COMMANDO"] = { vertical = 7.0, horizontal = 0.4 },
+    ["SMOKE SMG11"] = { vertical = 5.5, horizontal = 0.3 },
+    ["MUTE SMG11"] = { vertical = 5.5, horizontal = 0.3 },
+    ["CASTLE UMP"] = { vertical = 6.0, horizontal = 0.3 },
+    ["PULSE UMP"] = { vertical = 6.0, horizontal = 0.3 },
+    ["PULSE M45"] = { vertical = 4.5, horizontal = 0.2 },
+    ["DOC MP5"] = { vertical = 5.5, horizontal = 0.3 },
+    ["ROOK MP5"] = { vertical = 5.5, horizontal = 0.3 },
+    ["ROOK P9"] = { vertical = 4.5, horizontal = 0.2 },
+    ["KAPKAN 9X19"] = { vertical = 5.5, horizontal = 0.3 },
+    ["KAPKAN PMM"] = { vertical = 4.5, horizontal = 0.2 },
+    ["TACHANKA 9X19"] = { vertical = 5.5, horizontal = 0.3 },
+    ["TACHANKA PMM"] = { vertical = 4.5, horizontal = 0.2 },
+    ["JAGER 416"] = { vertical = 6.5, horizontal = 0.3 },
+    ["JAGER P12"] = { vertical = 4.5, horizontal = 0.2 },
+    ["BANDIT MP7"] = { vertical = 5.5, horizontal = 0.3 },
+    ["BANDIT P12"] = { vertical = 4.5, horizontal = 0.2 },
+    ["FROST 9MM"] = { vertical = 5.5, horizontal = 0.3 },
+    ["VALKYRIE MPX"] = { vertical = 5.5, horizontal = 0.3 },
+    ["VALKYRIE D50"] = { vertical = 4.5, horizontal = 0.2 },
+    ["CAVERIA LUISON"] = { vertical = 6.0, horizontal = 0.3 },
+    ["ECHO MP5SD"] = { vertical = 5.5, horizontal = 0.3 },
+    ["ECHO P229"] = { vertical = 4.5, horizontal = 0.2 },
+    ["MIRA VECTOR"] = { vertical = 6.5, horizontal = 0.3 },
+    ["LESION T5"] = { vertical = 6.0, horizontal = 0.3 },
+    ["ELA SCORPION"] = { vertical = 7.5, horizontal = 0.4 },
+    ["ELA RG15"] = { vertical = 4.5, horizontal = 0.2 },
+    ["VIGIL K1A"] = { vertical = 6.5, horizontal = 0.3 },
+    ["VIGIL SMG12"] = { vertical = 5.5, horizontal = 0.3 },
+    ["MAESTRO ALDA"] = { vertical = 7.0, horizontal = 0.4 },
+    ["ALIBI MX4"] = { vertical = 6.5, horizontal = 0.3 },
+    ["CLASH SPS"] = { vertical = 4.5, horizontal = 0.2 },
+    ["KAID TCSG"] = { vertical = 7.5, horizontal = 0.4 },
+    ["KAID LFP"] = { vertical = 4.5, horizontal = 0.2 },
+    ["MOZZIE P10"] = { vertical = 5.5, horizontal = 0.3 },
+    ["MOZZIE SDP"] = { vertical = 4.5, horizontal = 0.2 },
+    ["WARDEN MPX"] = { vertical = 5.5, horizontal = 0.3 },
+    ["WARDEN SMG12"] = { vertical = 5.5, horizontal = 0.3 },
+    ["GOYO VECTOR"] = { vertical = 6.5, horizontal = 0.3 },
+    ["GOYO P229"] = { vertical = 4.5, horizontal = 0.2 },
+    ["WAMAI MP5K"] = { vertical = 5.5, horizontal = 0.3 },
+    ["WAMAI KREATOS"] = { vertical = 6.0, horizontal = 0.3 },
+    ["ORYX T5"] = { vertical = 6.5, horizontal = 0.3 },
+    ["MELUSI MP5"] = { vertical = 5.5, horizontal = 0.3 },
+    ["MELUSI RG15"] = { vertical = 4.5, horizontal = 0.2 },
+    ["ARUNI P10"] = { vertical = 5.5, horizontal = 0.3 },
+    ["ARUNI PRB"] = { vertical = 4.5, horizontal = 0.2 },
+    ["THUNDERBIRD SPEAR"] = { vertical = 6.5, horizontal = 0.3 },
+    ["THUNDERBIRD Q929"] = { vertical = 4.5, horizontal = 0.2 },
+    ["THORN UZK"] = { vertical = 6.0, horizontal = 0.3 },
+    ["THORN 1911"] = { vertical = 4.5, horizontal = 0.2 },
+    ["AZAMI 9X19"] = { vertical = 5.5, horizontal = 0.3 },
+    ["AZAMI D50"] = { vertical = 4.5, horizontal = 0.2 },
+    ["SOLIS P90"] = { vertical = 5.5, horizontal = 0.3 },
+    ["SOLIS SMG11"] = { vertical = 5.5, horizontal = 0.3 },
+    ["FENRIR MP7"] = { vertical = 5.5, horizontal = 0.3 },
+    ["TUBARAO AR15"] = { vertical = 6.0, horizontal = 0.3 },
+    ["TUBARAO P226"] = { vertical = 4.5, horizontal = 0.2 },
+    ["SKOPOS PCX"] = { vertical = 5.5, horizontal = 0.3 },
+    ["SKOPOS P229"] = { vertical = 4.5, horizontal = 0.2 }
+}
+
+-- Define recoil pairs where keypresses will toggle between modes
+local recoilPairs = {
+    ["SLEDGE L85A2"] = "SLEDGE P226",
+    ["SLEDGE P226"] = "SLEDGE L85A2",
+    ["THATCHER L85A2"] = "THATCHER P226",
+    ["THATCHER P226"] = "THATCHER L85A2",
+    ["ASH R4C"] = "ASH USG",
+    ["ASH USG"] = "ASH R4C",
+    ["THERMITE 556XI"] = "THERMITE USG",
+    ["THERMITE USG"] = "THERMITE 556XI",
+    ["TWITCH F2"] = "TWITCH P9",
+    ["TWITCH P9"] = "TWITCH F2",
+    ["GLAZ OTS"] = "GLAZ PMM",
+    ["GLAZ PMM"] = "GLAZ OTS",
+    ["FUZE AK12"] = "FUZE PMM",
+    ["FUZE PMM"] = "FUZE AK12",
+    ["IQ G8A1"] = "IQ P12",
+    ["IQ P12"] = "IQ G8A1",
+    ["BUCK C8"] = "BUCK MK1",
+    ["BUCK MK1"] = "BUCK C8",
+    ["CAPITAO M249"] = "CAPITAO PRB",
+    ["CAPITAO PRB"] = "CAPITAO M249",
+    ["HIBANNA TYPE81"] = "HIBANNA BEARING9",
+    ["HIBANNA BEARING9"] = "HIBANNA TYPE81",
+    ["JACKAL C7E"] = "JACKAL USP",
+    ["JACKAL USP"] = "JACKAL C7E",
+    ["YING T95"] = "YING Q929",
+    ["YING Q929"] = "YING T95",
+    ["ZOFIA M762"] = "ZOFIA RG15",
+    ["ZOFIA RG15"] = "ZOFIA M762",
+    ["DOKKAEBI MK14"] = "DOKKAEBI SMG12",
+    ["DOKKAEBI SMG12"] = "DOKKAEBI MK14",
+    ["LION V308"] = "LION P9",
+    ["LION P9"] = "LION V308",
+    ["FINKA LP41"] = "FINKA PMM",
+    ["FINKA PMM"] = "FINKA LP41",
+    ["MAVERICK M4"] = "MAVERICK 1911",
+    ["MAVERICK 1911"] = "MAVERICK M4",
+    ["NOMAD ARX200"] = "NOMAD PRB",
+    ["NOMAD PRB"] = "NOMAD ARX200",
+    ["NOKK FMG9"] = "NOKK D50",
+    ["NOKK D50"] = "NOKK FMG9",
+    ["ARAMRU G8A1"] = "ARMARU SMG11",
+    ["ARMARU SMG11"] = "ARAMRU G8A1",
+    ["ZERO MP7"] = "ZERO USG",
+    ["ZERO USG"] = "ZERO MP7",
+    ["FLORES AR33"] = "FLORES GSH",
+    ["FLORES GSH"] = "FLORES AR33",
+    ["OSA PDW"] = "OSA PMM",
+    ["OSA PMM"] = "OSA PDW",
+    ["SENS POF"] = "SENS SDP",
+    ["SENS SDP"] = "SENS POF",
+    ["ACE AK12"] = "ACE P9",
+    ["ACE P9"] = "ACE AK12",
+    ["FLORES AR33"] = "FLORES GSH", 
+    ["FLORES GSH"] = "FLORES AR33",
+    ["THORN UZK"] = "THORN 1911", 
+    ["THORN 1911"] = "THORN UZK",
+    ["AZAMI 9X19"] = "AZAMI D50",
+    ["AZAMI D50"] = "AZAMI 9X19",
+    ["SOLIS P90"] = "SOLIS SMG11",
+    ["SOLIS SMG11"] = "SOLIS P90",
+    ["TUBARAO AR15"] = "TUBARAO P226",
+    ["TUBARAO P226"] = "TUBARAO AR15",
+    ["SKOPOS PCX"] = "SKOPOS P229",
+    ["SKOPOS P229"] = "SKOPOS PCX"
+}
+
+local currentMode = "ASH R4C"  -- default to one mode
+local currentModeIndex = 1
+
+EnablePrimaryMouseButtonEvents(true)
+
+local recoilAccumulator = 0  
+local horizontalAccumulator = 0
+local lastHorizontalMoveTime = GetRunningTime()
+
+function HandleRecoil()
+    -- Vertical recoil
+    recoilAccumulator = recoilAccumulator + RecoilControlStrength
+    local moveY = math.floor(recoilAccumulator)
+    recoilAccumulator = recoilAccumulator - moveY
+
+    -- Horizontal recoil only if enough time has passed
+    local now = GetRunningTime()
+    local moveX = 0
+    if now - lastHorizontalMoveTime >= HorizontalDelayRate then
+        horizontalAccumulator = horizontalAccumulator + RecoilControlHorizontal
+        moveX = math.floor(horizontalAccumulator)
+        horizontalAccumulator = horizontalAccumulator - moveX
+        lastHorizontalMoveTime = now
+    end
+
+    if moveX ~= 0 or moveY ~= 0 then
+        MoveMouseRelative(moveX, moveY)
+    end
+end
+
+function OnEvent(event, arg)
+    if EnableRCS ~= false then
+        -- Handle Recoil Control with the original mouse buttons
+        if IsMouseButtonPressed(3) then
+            repeat
+                if IsMouseButtonPressed(1) then
+                    repeat
+                        HandleRecoil()
+                        Sleep(DelayRate)
+                    until not IsMouseButtonPressed(1)
+                end
+            until not IsMouseButtonPressed(3)
+        end
+
+        -- Handle the pair-switching feature with Mouse Button 4 and Mouse Button 5
+        if IsModifierPressed("lctrl") then
+            if event == "MOUSE_BUTTON_PRESSED" then
+                if arg == 4 then  -- Mouse Button 4 (r)
+                    if recoilPairs[currentMode] then
+                        -- Switch to the pair of the current mode
+                        currentMode = recoilPairs[currentMode]
+                        RecoilControlStrength = recoilStrengths[currentMode].vertical
+                        RecoilControlHorizontal = recoilStrengths[currentMode].horizontal
+                        OutputLogMessage("Recoil Mode switched to: " .. currentMode .. "\n")
+                    end
+                elseif arg == 5 then  -- Mouse Button 5 (1)
+                    if recoilPairs[currentMode] then
+                        -- Switch back to the original mode
+                        local reversePair = nil
+                        for k, v in pairs(recoilPairs) do
+                            if v == currentMode then
+                                reversePair = k
+                                break
+                            end
+                        end
+                        if reversePair then
+                            currentMode = reversePair
+                            RecoilControlStrength = recoilStrengths[currentMode].vertical
+                            RecoilControlHorizontal = recoilStrengths[currentMode].horizontal
+                            OutputLogMessage("Recoil Mode switched back to: " .. currentMode .. "\n")
+                        end
+                    end
+                end
+            end
+        end
+
+        -- Change mode: Ctrl+Shift+MMB (next) or Ctrl+Alt+MMB (prev)
+        if event == "MOUSE_BUTTON_PRESSED" then
+            if IsModifierPressed("lctrl") and IsModifierPressed("lshift") and arg == 3 then
+                currentModeIndex = currentModeIndex + 1
+                if currentModeIndex > #recoilModes then currentModeIndex = 1 end
+                currentMode = recoilModes[currentModeIndex]
+                RecoilControlStrength = recoilStrengths[currentMode].vertical
+                RecoilControlHorizontal = recoilStrengths[currentMode].horizontal
+                OutputLogMessage("Recoil Mode changed to: " .. currentMode .. "\n")
+            elseif IsModifierPressed("lctrl") and IsModifierPressed("lalt") and arg == 3 then
+                currentModeIndex = currentModeIndex - 1
+                if currentModeIndex < 1 then currentModeIndex = #recoilModes end
+                currentMode = recoilModes[currentModeIndex]
+                RecoilControlStrength = recoilStrengths[currentMode].vertical
+                RecoilControlHorizontal = recoilStrengths[currentMode].horizontal
+                OutputLogMessage("Recoil Mode changed to: " .. currentMode .. "\n")
+            end
+        end
+    end
+end
